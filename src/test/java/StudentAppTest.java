@@ -9,6 +9,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
+import page_objects.AddStudentPage;
+import page_objects.AllSrudentsPage;
 
 import java.time.Duration;
 
@@ -17,6 +19,9 @@ public class StudentAppTest {
     WebDriver driver;
     WebDriverWait driverWait;
     Faker dataFaker = new Faker();
+    AllSrudentsPage allSrudentsPage;
+
+    AddStudentPage addStudentPage;
 
     private final String APP_URL = "http://app.acodemy.lv/";
 
@@ -25,9 +30,12 @@ public class StudentAppTest {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+//        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driverWait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get(APP_URL);
+        allSrudentsPage = new AllSrudentsPage(driver);
+        addStudentPage = new AddStudentPage(driver);
+
     }
 
     @AfterMethod
@@ -38,16 +46,8 @@ public class StudentAppTest {
 
     @Test
     public void openStudentApp() {
-
-
-        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='ant-table-title']//button")));
-        WebElement addStudentButton = driver.findElement(By.xpath("//div[@class='ant-table-title']//button"));
-        addStudentButton.click();
-
-        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("name")));
-        WebElement nameField = driver.findElement(By.id("name"));
-        String name = dataFaker.pokemon().name();
-        nameField.sendKeys(name);
+        allSrudentsPage.waitAndClickOnStudentButton();
+        addStudentPage.waitAndSetValueForNameField();
 
         WebElement emailField = driver.findElement(By.id("email"));
         emailField.sendKeys(dataFaker.internet().emailAddress());
@@ -55,8 +55,8 @@ public class StudentAppTest {
         WebElement genderField = driver.findElement(By.id("gender"));
         genderField.click();
 
-        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='MALE']")));
-        WebElement valueFromDropdown = driver.findElement(By.xpath("//div[text()='MALE']"));
+        driverWait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='OTHER']")));
+        WebElement valueFromDropdown = driver.findElement(By.xpath("//div[text()='OTHER']"));
         valueFromDropdown.click();
 
         WebElement submitButton = driver.findElement(By.xpath("//div[@class='ant-form-item-control-input-content']//button"));
